@@ -1,0 +1,11 @@
+{:paths   ["resources" "src"]
+
+ :deps    {org.clojure/clojure                 {:mvn/version "1.10.0"}
+           org.tukaani/xz                      {:mvn/version "1.8"}
+           org.brotli/dec                      {:mvn/version "0.1.2"}
+           org.apache.commons/commons-compress {:mvn/version "1.18"}}
+
+ :aliases {:test {:extra-paths ["test"]
+                      :extra-deps  {org.clojure/test.check {:mvn/version "RELEASE"}
+                                    lambdaisland/kaocha {:mvn/version "0.0-389"}}
+                      :main-opts   ["--main" "kaocha.runner" "--no-capture-output"]}}}
