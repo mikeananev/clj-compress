@@ -1,6 +1,7 @@
 # clj-compress
 
-  A Clojure library designed to compress/decompress data. This is a thin wrapper for Apache commons-compress library.
+  A Clojure library designed to compress/decompress data.\
+  This is a thin wrapper for Apache commons-compress library.\
   Supported algorithms: LZMA, GZIP, BZIP2, Snappy, Deflate, LZ4.
   
   Best compression ratio (in order of ratio): BZIP2, LZMA, Deflate, GZIP.
