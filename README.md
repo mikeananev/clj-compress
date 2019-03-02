@@ -1,10 +1,10 @@
 # clj-compress
 
-A Clojure library designed to compress/decompress data. This is a thin wrapper for Apache commons-compress library.
-Supported algorithms: LZMA, GZIP, BZIP2, Snappy, Deflate, LZ4.
-Best compression ratio (in order of ratio): BZIP2, LZMA, Deflate, GZIP.
-Snappy and LZ4 faster but has lower compression ratio.
-LZ4 on a big files sometimes very very slow.
+  A Clojure library designed to compress/decompress data. This is a thin wrapper for Apache commons-compress library.
+  Supported algorithms: LZMA, GZIP, BZIP2, Snappy, Deflate, LZ4.
+  Best compression ratio (in order of ratio): BZIP2, LZMA, Deflate, GZIP.
+  Snappy and LZ4 faster but has lower compression ratio.
+  LZ4 on a big files sometimes very very slow.
 
 ## Usage
 
@@ -12,7 +12,7 @@ For Leiningen add to project.clj: ```[middlesphere/clj-compress "0.1.0"]```
 
 For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/version "0.1.0}}```
 
-1. Import namespace:
+1. Import necessary namespaces:
     ```clojure
     (require '[middlesphere.clj-compress :as c])
     (require '[clojure.java.io :refer [file output-stream input-stream] :as io])
