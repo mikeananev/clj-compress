@@ -1,9 +1,9 @@
 # clj-compress
 
   A Clojure library designed to compress/decompress data. This is a thin wrapper for Apache commons-compress library.\
-  Supported algorithms: LZMA, GZIP, BZIP2, Snappy, Deflate, LZ4.
+  Supported algorithms: LZMA, GZIP, BZIP2, Snappy, Deflate, LZ4, XZ.
   
-  Best compression ratio gives (in order of ratio): BZIP2, LZMA, Deflate, GZIP.
+  Best compression ratio: BZIP2, LZMA, XZ, Deflate, GZIP.
   
   Snappy and LZ4 faster but has lower compression ratio.\
   LZ4 on a big files sometimes very very slow.
@@ -16,14 +16,14 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
 
 1. Import necessary namespaces:
     ```clojure
-    (require '[middlesphere.clj-compress :as c])
+    (require '[clj-compress.core :as c])
     (require '[clojure.java.io :refer [file output-stream input-stream] :as io])
     (import '(java.io ByteArrayOutputStream))
     ```
 2. To check available compressors:
     ```clojure
     c/compressors
-    ;;=> ["lzma" "gz" "bzip2" "snappy-framed" "deflate" "lz4-framed"]
+    ;;=> ["lzma" "gz" "bzip2" "snappy-framed" "deflate" "lz4-framed" "xz"]
     ```
 3. To compress string data:
 
@@ -34,8 +34,8 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
           compressor  "lzma"
           cbuf        (ByteArrayOutputStream.)
           coutbuf     (ByteArrayOutputStream.)
-          comp-size   (compress-data sbuf cbuf compressor)
-          decomp-size (decompress-data (.toByteArray cbuf) coutbuf compressor)]
+          comp-size   (c/compress-data sbuf cbuf compressor)
+          decomp-size (c/decompress-data (.toByteArray cbuf) coutbuf compressor)]
       (println (format "compressor: %s, src size: %s, compressed: %s, decompressed: %s."
                        compressor (.length s) (.size cbuf) decomp-size))
       (println "s: " s "decompressed s:" (.toString coutbuf)))
@@ -51,8 +51,8 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
           compressor      "lzma"
           out-file        (str in-file "." compressor)
           decomp-out-file (str in-file "." "txt")
-          comp-size       (compress-data in-file out-file compressor)
-          decomp-size     (decompress-data out-file decomp-out-file compressor)]
+          comp-size       (c/compress-data in-file out-file compressor)
+          decomp-size     (c/decompress-data out-file decomp-out-file compressor)]
       (println (format "compressor: %s, src size: %s, compressed: %s, decompressed: %s."
                        compressor (.length (io/file in-file)) (.length (io/file out-file)) decomp-size)))
                        
@@ -61,17 +61,14 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
     ```
     Don't forget to delete intermediate files.
 
-5. To create real archive from file or folder:
+5. To create archive from group of files and folders:
 
     ```clojure
-    (create-archive "data/test-file.txt" "data/" "gz")
-    ;;=> "data/test-file.tar.gz"
-    
-    (create-archive "data/test-folder/" "data" "lzma")
-    ;;=> "data/test-folder.tar.lzma"
+     (c/create-archive "abc" ["data/test-folder/test-file.txt" "data/test-folder/folder1"] "data/" "xz")
+    ;;=> "data/abc.tar.xz"
     ```
     
-6. To create real archive from folder:
+6. To decompress data from archive to folder:
 
     ```clojure
 

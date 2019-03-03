@@ -1,7 +1,7 @@
-(ns middlesphere.clj-compress-test
+(ns clj-compress.core-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :refer [file output-stream input-stream] :as io]
-            [middlesphere.clj-compress :refer :all])
+            [clj-compress.core :refer :all])
   (:import (java.io ByteArrayOutputStream)))
 
 (deftest compress-data-test
@@ -34,3 +34,19 @@
           (is (> comp-size 0))
           (is (= comp-size decomp-size)))))))
 
+
+#_(deftest create-archive-test
+
+  (testing "Compressing single file test"
+    (let [in-file "data/test-file.txt"]
+      (doseq [c compressors]
+        (let [out-file        (create-archive "test-file" [in-file] "data/" c)
+              decomp-out-file (str in-file "." "txt")
+              comp-size       (.length  (io/file out-file))
+              decomp-size     (decompress-archive out-file decomp-out-file c)]
+          (println (format "compressor: %13s, src size: %7s, compressed: %7s, decompressed: %7s."
+                           c (.length (io/file in-file)) (.length (io/file out-file)) decomp-size))
+          (io/delete-file out-file)
+          (io/delete-file decomp-out-file)
+          (is (> comp-size 0))
+          (is (= comp-size decomp-size)))))))
