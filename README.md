@@ -78,7 +78,23 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
     (c/decompress-archive "data/abc.tar.xz" "data/out" "xz")
 
     ```
+ 7. To list archive items:
  
+    ```clojure
+    (c/list-archive "data/abc.tar.bz2")  
+    ;; =>
+    #:item{:count 3,
+           :list [#:item{:name "test-folder/test-file.txt",
+                         :size 11218,
+                         :last-modified #inst"2019-02-28T21:30:39.000-00:00"}
+                  #:item{:name "test-folder/folder2/big.txt",
+                         :size 6488666,
+                         :last-modified #inst"2018-12-28T23:02:00.000-00:00"}
+                  #:item{:name "test-folder/folder1/1.txt",
+                         :size 11218,
+                         :last-modified #inst"2019-02-28T21:30:39.000-00:00"}]}
+
+    ``` 
 
 ## Run Tests
 

@@ -140,9 +140,28 @@
     (.close in)
     file-count))
 
+(defn list-archive
+  "return list of archived items"
+  [^String arch-name & [compressor]]
+  (let [in         (BufferedInputStream. (input-stream (file arch-name)))
+        cis        (if compressor (.createCompressorInputStream (CompressorStreamFactory.) compressor in)
+                                  (.createCompressorInputStream (CompressorStreamFactory.) in))
+        ais        (.createArchiveInputStream (ArchiveStreamFactory.) ArchiveStreamFactory/TAR cis)
+        file-count (loop [entry      (.getNextEntry ais)
+                          cnt        0
+                          item-list []]
+                     (if entry
+                       (recur (.getNextEntry ais) (inc cnt) (conj item-list {:item/name          (.getName entry)
+                                                                              :item/size          (.getSize entry)
+                                                                              :item/last-modified (.getLastModifiedDate entry)}))
+                       {:item/count cnt
+                        :item/list item-list}))]
+    (.close ais)
+    (.close cis)
+    (.close in)
+    file-count))
 
 (comment
-  (count (file-seq (file "data/test-folder")))
-  (count (file-seq (file "data/out")))
   (create-archive "abc" ["data/test-folder"] "data/" "bzip2")
-  (decompress-archive "data/abc.tar.bz2" "data/out/" "bzip2"))
+  (decompress-archive "data/abc.tar.bz2" "data/out/" "bzip2")
+  (list-archive "data/abc.tar.bz2"))
