@@ -1,6 +1,6 @@
 (defproject middlesphere/clj-compress "0.1.0-SNAPSHOT"
   :description "A Clojure library designed to compress/decompress data."
-  :url "http://example.com/FIXME"
+  :url "https://github.com/mikeananev/clj-compress.git"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 

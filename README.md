@@ -71,6 +71,11 @@ For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/versio
 6. To decompress data from archive to folder:
 
     ```clojure
+    ;; guess by archive extension
+    (c/decompress-archive "data/abc.tar.xz" "data/out")   
+    
+    ;; explicitly set compressor type
+    (c/decompress-archive "data/abc.tar.xz" "data/out" "xz")
 
     ```
  

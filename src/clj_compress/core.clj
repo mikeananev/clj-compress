@@ -1,11 +1,13 @@
 (ns clj-compress.core
   (:require [clojure.java.io :refer [file output-stream input-stream] :as io]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.set])
   (:import (org.apache.commons.compress.compressors CompressorStreamFactory)
            (org.apache.commons.compress.utils IOUtils)
            (org.apache.commons.compress.archivers.tar TarArchiveOutputStream)
-           (java.io File)
-           (org.apache.commons.io FilenameUtils)))
+           (java.io File BufferedInputStream)
+           (org.apache.commons.io FilenameUtils)
+           (org.apache.commons.compress.archivers ArchiveStreamFactory)))
 
 (def compressors ["lzma" "gz" "bzip2" "snappy-framed" "deflate" "lz4-framed" "xz"])
 
@@ -109,3 +111,38 @@
     (.close a)
     out-fname))
 
+
+(defn decompress-archive
+  "decompress data from archive to `out-folder` directory.
+  Warning! In `out-folder` files will be overwritten by decompressed data from `arch-name`.
+  `compressor` is optional argument, ArchiveStreamFactory tries to guess compressor type based on archive extension.
+  returns number of decompressed entries (files)."
+  [^String arch-name ^String out-folder & [compressor]]
+  (let [in         (BufferedInputStream. (input-stream (file arch-name)))
+        cis        (if compressor (.createCompressorInputStream (CompressorStreamFactory.) compressor in)
+                                  (.createCompressorInputStream (CompressorStreamFactory.) in))
+        ais        (.createArchiveInputStream (ArchiveStreamFactory.) ArchiveStreamFactory/TAR cis)
+        file-count (loop [entry (.getNextEntry ais)
+                          cnt   0]
+                     (if entry
+                       (let [save-path (str out-folder File/separatorChar (.getName entry))
+                             out-file  (File. save-path)]
+                         (if (.isDirectory entry)
+                           (if-not (.exists out-file)
+                             (.mkdirs out-file))
+                           (let [parent-dir (File. (.substring save-path 0 (.lastIndexOf save-path (int File/separatorChar))))]
+                             (if-not (.exists parent-dir) (.mkdirs parent-dir))
+                             (clojure.java.io/copy ais out-file :buffer-size 8192)))
+                         (recur (.getNextEntry ais) (inc cnt)))
+                       cnt))]
+    (.close ais)
+    (.close cis)
+    (.close in)
+    file-count))
+
+
+(comment
+  (count (file-seq (file "data/test-folder")))
+  (count (file-seq (file "data/out")))
+  (create-archive "abc" ["data/test-folder"] "data/" "bzip2")
+  (decompress-archive "data/abc.tar.bz2" "data/out/" "bzip2"))
