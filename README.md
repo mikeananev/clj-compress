@@ -12,7 +12,7 @@
 
 For Leiningen add to project.clj: ```[middlesphere/clj-compress "0.1.0"]```
 
-For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/version "0.1.0}}```
+For Deps CLI add to deps.edn:  ```{:deps {middlesphere/clj-compress {:mvn/version "0.1.0"}}}```
 
 1. Import necessary namespaces:
     ```clojure
